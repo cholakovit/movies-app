@@ -6,19 +6,12 @@ import reportWebVitals from "./reportWebVitals";
 // Components
 import App from "./App";
 
-// Tanstack Query Elements
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-const queryClient = new QueryClient();
-
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <App />
-    </QueryClientProvider>
+    <App />
   </React.StrictMode>
 );
 reportWebVitals();

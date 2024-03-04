@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 
 // MUI Elements
 import { Skeleton } from "@mui/material";

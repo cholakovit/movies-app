@@ -1,91 +1,9 @@
-// React Elements
-import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { ColorModeContext } from "./Context";
-
-// Tanstack Query Elements
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-
-// Types
-import { AlertWithTimeoutHookProps, ForecastData, LocationState, WeatherData } from "../types";
-
-// Hooks
-import { fetchCurrentLocation, fetchWeatherData, fetchWeatherForecast } from "./fn";
-
-// Constants
-import { C, DATE_UNDEFINED, DETAILED_WEATHER, F, GEOLOCATION, METRIC_SYSTEM, WEATHER_FORCAST } from "../constants/common";
-
-
-export const useGeolocationQuery = () => {
-  return useQuery<LocationState, Error>({
-    queryKey: [GEOLOCATION],
-    queryFn: fetchCurrentLocation, 
-    staleTime: Infinity,
-  });
-};
-
-export const useWeatherForecast = () => {
-
-  const queryClient = useQueryClient();
-  const cachedLocation = queryClient.getQueryData<LocationState>([GEOLOCATION]);
-
-  const { data: metricSystem } = useQuery({
-    queryKey: [METRIC_SYSTEM],
-    initialData: localStorage.getItem(METRIC_SYSTEM) || C
-  });
-
-  const { data: forecast, isLoading, error } = useQuery<ForecastData, Error>({
-    queryKey: [WEATHER_FORCAST, cachedLocation?.lat, cachedLocation?.lon],
-    queryFn: () => fetchWeatherForecast(cachedLocation?.lat, cachedLocation?.lon),
-    enabled: cachedLocation?.lat !== undefined && cachedLocation?.lon !== undefined, // Only run if lat and lon are available
-    staleTime: Infinity,
-  });
-
-  return { forecast, isLoading, error: error?.message, metricSystem };
-};
-
-export const useDetailedWeather = () => {
-  const { date } = useParams<{ date: string }>();
-  const queryClient = useQueryClient();
-  const cachedLocation = queryClient.getQueryData<LocationState>([GEOLOCATION]);
-
-  const { data: metricSystem } = useQuery({
-    queryKey: [METRIC_SYSTEM],
-    initialData: localStorage.getItem(METRIC_SYSTEM) || C
-  });
-
-  console.log('date: ', date)
-
-  const { data: weatherData, isLoading, error } = useQuery<WeatherData, Error>({
-    queryKey: [DETAILED_WEATHER, date],
-    queryFn: () => date ? fetchWeatherData(date, cachedLocation?.lat, cachedLocation?.lon) : Promise.reject(new Error(DATE_UNDEFINED)),
-    enabled: !!date,
-  });
-
-  return { hourlyData: weatherData?.hourly, isLoading, error, metricSystem };
-};
-
-export const useMetricSystem = () => {
-  const colorMode = useContext(ColorModeContext) || {};
-
-  const queryClient = useQueryClient();
-
-  const [metricSystem, setMetricSystem] = useState<'C' | 'F'>(() => {
-    const storedValue = localStorage.getItem(METRIC_SYSTEM);
-    return (storedValue === C || storedValue === F ? storedValue : C) as 'C' | 'F';
-  });
-
-  useEffect(() => {
-    localStorage.setItem(METRIC_SYSTEM, metricSystem);
-    queryClient.setQueryData([METRIC_SYSTEM], metricSystem);
-  }, [metricSystem, queryClient]);
-
-  const toggleMetricSystem = () => {
-    setMetricSystem(prevSystem => prevSystem === C ? F : C);
-  };
-
-  return { metricSystem, toggleMetricSystem, colorMode };
-};
+import { useEffect, useMemo, useState } from "react";
+import { AlertWithTimeoutHookProps, ColorModeContextType, Movie, MovieData } from "../types";
+import { useWeatherTheme } from "./weatherTheme";
+import { PaletteMode } from "@mui/material";
+import { DARK, LIGHT } from "./constants";
+//import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useAlertWithTimeout = ({ initialAlert, timeout }: AlertWithTimeoutHookProps): string | null => {
   const [alert, setAlert] = useState<string | null>(initialAlert);
@@ -105,19 +23,101 @@ export const useAlertWithTimeout = ({ initialAlert, timeout }: AlertWithTimeoutH
   return alert;
 };
 
-export const usePrefetchWeatherData = () => {
-  const queryClient = useQueryClient();
+export const useFileReader = () => {
+  const [movies, setMovies] = useState<Movie[]>([]);
 
-  const prefetchWeatherData = (date: string) => {
-    const cachedLocation = queryClient.getQueryData<LocationState>([GEOLOCATION]);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files ? event.target.files[0] : null;
+      if (!file) return;
 
-    if (cachedLocation) {
-      queryClient.prefetchQuery({
-        queryKey: ['detailedWeather', date],
-        queryFn: () => fetchWeatherData(date, cachedLocation.lat, cachedLocation.lon),
-      });
-    }
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+          const content = e.target?.result?.toString().split('\n').filter(Boolean) || [];
+          setMovies(content.map(title => ({ title, checked: true })));
+      };
+      reader.readAsText(file);
   };
 
-  return prefetchWeatherData;
+  return { movies, handleFileChange };
+};
+
+export const useMovieSearch = () => {
+  const [movieData, setMovieData] = useState<MovieData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const fetchMovieData = async (movieTitles: string[]) => {
+      setLoading(true);
+      setError('');
+      try {
+          const apiKey = process.env.REACT_APP_TMDB_API_KEY;
+          const movieDataPromises = movieTitles.map(title =>
+              fetch(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(title)}`)
+              .then(response => response.json())
+              .then(data => {
+                  const movie = data.results[0]; // Assuming the first result is the most relevant
+                  if (!movie) {
+                      throw new Error(`No results for "${title}"`);
+                  }
+                  // Simplify and adjust based on your needs. This is a basic mapping.
+                  return {
+                      id: movie.id,
+                      title: movie.title,
+                      overview: movie.overview,
+                      actors: [], // Placeholder, requires additional calls
+                      genres: movie.genre_ids, // Placeholder, you may want to resolve these to genre names
+                      poster: `https://image.tmdb.org/t/p/original${movie.poster_path}`,
+                      release: movie.release_date,
+                      rating: movie.vote_average,
+                      trailer: '', // Placeholder, requires additional handling
+                      director: '', // Placeholder, requires additional calls
+                      duration: movie.runtime // This might not always be available here
+                  };
+              })
+          );
+          const movies = await Promise.all(movieDataPromises);
+          setMovieData(movies);
+      } catch (err: any) {
+          setError(err.message || 'An error occurred while fetching movie data.');
+      } finally {
+          setLoading(false);
+      }
+  };
+
+  return { movieData, loading, error, fetchMovieData };
+};
+
+export const useHandleSearch = (movies: Movie[], fetchMovieData: (titles: string[]) => void) => {
+  const handleSearch = () => {
+      const titles = movies.filter(movie => movie.checked).map(movie => movie.title);
+      fetchMovieData(titles);
+  };
+
+  return { handleSearch };
+};
+
+export const useSyncFilteredMovies = <T,>(movieData: T[]) => {
+  const [filteredMovies, setFilteredMovies] = useState<T[]>(movieData);
+
+  useEffect(() => {
+      setFilteredMovies(movieData);
+  }, [movieData]);
+
+  return { filteredMovies, setFilteredMovies };
+};
+
+export const useDynamicTheme = (): [ReturnType<typeof useWeatherTheme>, ColorModeContextType] => {
+  const [mode, setMode] = useState<PaletteMode>(DARK);
+  const colorMode: ColorModeContextType = useMemo(
+    () => ({
+      toggleColorMode: () => {
+        setMode((prevMode: PaletteMode) => (prevMode === LIGHT ? DARK : LIGHT));
+      },
+    }),
+    []
+  );
+
+  const theme = useWeatherTheme(mode);
+
+  return [theme, colorMode];
 };

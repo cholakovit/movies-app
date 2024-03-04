@@ -1,70 +1,30 @@
 // React Elements
-import { FC, useMemo, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { FC } from "react";
 import { ColorModeContext } from "./helper/Context";
 
-// Components
-import { WeatherForecast } from "./components/WeatherForecast";
-import { DetailedWeather } from "./components/DetailedWeather";
-import Header from "./components/Header";
-import AlertMessage from "./components/Alert";
-import Skeletons from "./components/Skeletons";
-
-// Hooks
-import { useGeolocationQuery } from "./helper/hooks";
-
 // MUI Elements
-import { CssBaseline, PaletteMode, ThemeProvider } from "@mui/material";
-import { useWeatherTheme } from "./helper/weatherTheme";
-import { WeatherApp } from "./index.style";
-
-// Constants
-import { DARK, GEOLOCATION_ERROR, LIGHT } from "./constants/common";
+import { ThemeProvider } from "@mui/material";
 
 // Types
-import { ColorModeContextType } from "./types";
+import { Home } from "./pages/Home";
+
+// Tanstack Query Elements
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useDynamicTheme } from "./helper/hooks";
+const queryClient = new QueryClient();
 
 const App: FC = () => {
-  const { isLoading, error } = useGeolocationQuery();
 
-  const [mode, setMode] = useState<PaletteMode>(DARK);
-  const colorMode: ColorModeContextType = useMemo(
-    () => ({
-      toggleColorMode: () => {
-        setMode((prevMode: PaletteMode) => (prevMode === LIGHT ? DARK : LIGHT));
-      },
-    }),
-    []
-  );
-
-  const theme = useWeatherTheme(mode);
+  const [theme, colorMode] = useDynamicTheme();
 
   return (
-    <WeatherApp>
+    <QueryClientProvider client={queryClient}>
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={theme}>
-          {error ? (
-            <AlertMessage
-              alert={`${GEOLOCATION_ERROR} ${(error as Error).message}`}
-              type="error"
-            />
-          ) : isLoading ? (
-            <Skeletons flag={1} width={250} height={120} number={1} />
-          ) : (
-            <>
-              <CssBaseline />
-              <Header />
-              <Router>
-                <Routes>
-                  <Route path="/" element={<WeatherForecast />} />
-                  <Route path="/details/:date" element={<DetailedWeather />} />
-                </Routes>
-              </Router>
-            </>
-          )}
+          <Home />
         </ThemeProvider>
       </ColorModeContext.Provider>
-    </WeatherApp>
+    </QueryClientProvider>
   );
 };
 

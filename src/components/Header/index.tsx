@@ -1,36 +1,32 @@
 // MUI Elements
 import {
-  MaterialUISwitch,
-  WeatherFormControlLabel,
-  WeatherAppBar,
+  HeaderAppBar,
   HeaderContainer,
-  MetricUISwitch,
+  HeaderFormControlLabel,
+  MaterialUISwitch,
 } from "./index.style";
 
 // Hooks
-import { useMetricSystem } from "../../helper/hooks";
+import { FC, useContext } from 'react';
 
-const Header = () => {
-  const { metricSystem, toggleMetricSystem, colorMode } = useMetricSystem();
+// Context for the Theme
+import { ColorModeContext } from '../../helper/Context';
+import { colorModeProps } from "../../types";
+
+const Header: FC = () => {
+  const colorMode: colorModeProps = useContext(ColorModeContext) || {};
 
   return (
-    <WeatherAppBar>
+    <HeaderAppBar>
       <HeaderContainer>
-        <WeatherFormControlLabel
+        <HeaderFormControlLabel
           label=""
           onClick={colorMode.toggleColorMode}
           control={<MaterialUISwitch defaultChecked />}
           data-testid="material-ui-switch"
         />
-
-        <WeatherFormControlLabel
-          label=""
-          onClick={toggleMetricSystem}
-          control={<MetricUISwitch checked={metricSystem === "C"} />}
-          data-testid="metric-ui-switch"
-        />
       </HeaderContainer>
-    </WeatherAppBar>
+    </HeaderAppBar>
   );
 };
 

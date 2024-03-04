@@ -1,80 +1,6 @@
 import { PaletteMode } from "@mui/material";
 import { PaletteOptions } from "@mui/material/styles";
 import { AlertColor } from "@mui/material";
-
-type DailyWeather = {
-  dt: number;
-  temp: {
-    day: number;
-    night: number; 
-  };
-  feels_like: { 
-    day: number;
-    night: number;
-  };
-  humidity: number; 
-  wind_speed: number; 
-  weather: [{
-    main: string;
-    description: string;
-  }];
-  clouds: number; 
-  pressure: number; 
-  uvi: number; 
-  sunrise: number; 
-  sunset: number; 
-  rain?: number | null;
-  snow?: number | null;
-  hourly?: number | null;
-}
-
-type HourlyWeather = {
-  dt: number; // Timestamp for the hour
-  temp: number; // Actual temperature
-  feels_like: number; // "Feels like" temperature
-  weather: [
-    {
-      main: string; // Main weather condition (e.g., "Clouds", "Rain")
-      description: string; // More detailed weather condition description
-    }
-  ];
-  // Include any other properties you might need from the hourly weather data
-};
-
-type WeatherData = {
-  daily: DailyWeather[];
-  hourly?: HourlyWeather[];
-}
-
-type WeatherInfo = {
-  description: string;
-  icon: string;
-  id: number;
-  main: string;
-}
-
-type ForecastInfo = {
-  dt_txt: string;
-  main: {
-    temp: number;
-  };
-  weather: WeatherInfo[];
-}
-
-type ForecastData = {
-  city: {
-    name: string;
-  };
-  list: ForecastInfo[];
-}
-
-type LocationState = {
-  lat: number | null | undefined;
-  lon: number | null | undefined;
-};
-
-type ErrorState = string | null;
-
 declare module "@mui/material/styles" {
   interface PaletteColor {
     lighter?: string;
@@ -131,15 +57,6 @@ export type ColorModeContextType = {
   toggleColorMode: () => void;
 }
 
-// for the Theme
-export type colorModeProps = {
-  toggleColorMode?: string | null;
-};
-
-export type metricModeProps = {
-  toggleMetricMode?: string | null;
-};
-
 export type AlertWithTimeoutHookProps = {
   initialAlert: string | null
   timeout: number
@@ -150,7 +67,6 @@ export type AlertMessageProps = {
   type: AlertColor;
 }
 
-// for the Skeleton
 type SkeletonProps = {
   flag: number;
   width: number;
@@ -158,8 +74,25 @@ type SkeletonProps = {
   number: number;
 };
 
-type UseMetricSystemReturn = {
-  metricSystem: 'C' | 'F';
-  toggleMetricSystem: () => void;
-  colorMode: { toggleColorMode: () => void };
+type colorModeProps = {
+  toggleColorMode: () => void; 
+}
+
+type Movie = {
+  title: string;
+  checked: boolean;
+}
+
+type MovieData = {
+  id: number;
+  title: string;
+  overview: string;
+  actors: string[]; 
+  genres: string[]; 
+  poster: string;
+  release: string;
+  rating: number;
+  trailer: string; 
+  director: string; 
+  duration: number;
 }

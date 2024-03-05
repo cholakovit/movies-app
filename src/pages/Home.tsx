@@ -1,10 +1,17 @@
+// React Elements
+import { FC } from "react";
+
+// Components
 import Header from "../components/Header";
 import FileUpload from "../components/FileUpload";
+
+// MUI Elements
 import { MoviesApp, MoviesContainer } from "../index.style";
-import { FC } from "react";
+import { CssBaseline } from "@mui/material";
+
+// Components
 import Movies from "../components/MovieTitles";
 import MoviesList from "../components/MoviesList";
-import { CssBaseline } from "@mui/material";
 
 export const Home: FC = () => {
   return (

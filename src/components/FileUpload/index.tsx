@@ -7,6 +7,9 @@ import {
 } from "./index.style";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
+// Constants
+import { UPLOAD_FILE } from "../../helper/constants";
+
 const MoviesUploader: FC = () => {
   const { handleFileChange } = useFileReader();
   return (
@@ -18,7 +21,7 @@ const MoviesUploader: FC = () => {
         tabIndex={-1}
         startIcon={<CloudUploadIcon />}
       >
-        Upload file
+        {UPLOAD_FILE}
         <VisuallyHiddenInput
           type="file"
           accept=".txt"

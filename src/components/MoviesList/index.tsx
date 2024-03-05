@@ -1,10 +1,14 @@
+// Tanstack Query Elements
 import { useQuery } from "@tanstack/react-query";
+
+// Hooks
 import {
   useMoviesSearch,
   useSearchTitles,
   useSyncFilteredMovies,
 } from "../../helper/hooks";
 
+// MUI Elements
 import {
   Button,
   CardActions,
@@ -12,8 +16,15 @@ import {
   CardMedia,
   Typography,
 } from "@mui/material";
-import { MovieCard, MovieCardContainer, StyledSearchButton } from "./index.style";
 import SearchIcon from "@mui/icons-material/Search";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import {
+  MovieCard,
+  MovieCardContainer,
+  StyledSearchButton,
+} from "./index.style";
+
+// Components
 import AlertMessage from "../Alert";
 import Skeletons from "../Skeletons";
 
@@ -39,10 +50,7 @@ const MoviesList = () => {
   return (
     <>
       {error ? (
-        <AlertMessage
-          alert={`Error: ${error}`}
-          type="error"
-        />
+        <AlertMessage alert={`Error: ${error}`} type="error" />
       ) : loading ? (
         <Skeletons width={330} height={600} number={filteredMovies.length} />
       ) : (
@@ -56,10 +64,10 @@ const MoviesList = () => {
               Search
             </StyledSearchButton>
           )}
-  
+
           <MovieCardContainer>
             {filteredMovies.map((movie: any, index) => (
-              <MovieCard  key={index}>
+              <MovieCard key={index}>
                 <CardMedia
                   component="img"
                   alt={movie.title}
@@ -76,7 +84,7 @@ const MoviesList = () => {
                 </CardContent>
                 <CardActions>
                   <Button size="small" onClick={() => removeMovie(movie.id)}>
-                    🗑️
+                    <DeleteForeverIcon />
                   </Button>
                 </CardActions>
               </MovieCard>

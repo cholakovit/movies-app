@@ -1,5 +1,10 @@
+// React Elements
 import { useState } from "react";
+
+// Tanstack Query Elements
 import { useQuery } from "@tanstack/react-query";
+
+// MUI Elements
 import {
   Checkbox,
   ListItem,
@@ -7,8 +12,12 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { Movie } from "../../../types";
 import { MovieTitles } from "./index.style";
+
+// Types
+import { Movie } from "../../../types";
+
+// Hooks
 import {
   useHandleCheckboxChange,
   useInitialSelectionAndFinalize,

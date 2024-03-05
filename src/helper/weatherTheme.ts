@@ -34,10 +34,11 @@ export const useWeatherTheme = (mode: PaletteMode) => {
             white: mode === "light" ? colors.grey[800] : colors.grey[600],
             lighter: mode === "light" ? colors.grey[800] : colors.grey[400],
             iconColor: mode === "light" ? colors.grey[900] : colors.grey[100],
-            hoverBgButton: mode === "light" ? colors.grey[900] : colors.grey[700],
+            hoverBgButton:
+              mode === "light" ? colors.grey[900] : colors.grey[700],
           },
-          mode, 
-        } as CustomPalette, 
+          mode,
+        } as CustomPalette,
       }),
     [mode]
   );

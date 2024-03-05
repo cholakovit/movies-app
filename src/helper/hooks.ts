@@ -6,6 +6,7 @@ import { DARK, LIGHT } from "./constants";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
 import { fetchMovieData } from "./fn";
 
+// Displaying an alert message for a specified duration before automatically dismissing it.
 export const useAlertWithTimeout = ({ initialAlert, timeout }: AlertWithTimeoutHookProps): string | null => {
   const [alert, setAlert] = useState<string | null>(initialAlert);
 
@@ -22,6 +23,7 @@ export const useAlertWithTimeout = ({ initialAlert, timeout }: AlertWithTimeoutH
   return alert;
 };
 
+// Reads a file's contents to populate and cache movie data upon file selection change.
 export const useFileReader = () => {
   const queryClient = useQueryClient();
 
@@ -42,6 +44,7 @@ export const useFileReader = () => {
   return { handleFileChange };
 };
 
+// Concurrently fetches data for multiple movie titles using React Query, aggregating their loading states, errors, and results.
 export const useMoviesSearch = (movieTitles: string[] | undefined) => {
   const queryResults = useQueries({
     queries: movieTitles!.map(title => ({
@@ -63,6 +66,7 @@ export const useMoviesSearch = (movieTitles: string[] | undefined) => {
   };
 };
 
+// Synchronizes and manages a stateful list of filtered movies with an external movie data array.
 export const useSyncFilteredMovies = <T,>(movieData: T[]) => {
   const [filteredMovies, setFilteredMovies] = useState<T[]>(movieData);
 
@@ -73,6 +77,7 @@ export const useSyncFilteredMovies = <T,>(movieData: T[]) => {
   return { filteredMovies, setFilteredMovies };
 };
 
+// Dynamically toggling and providing a themed color mode context based on user interaction.
 export const useDynamicTheme = (): [ReturnType<typeof useWeatherTheme>, ColorModeContextType] => {
   const [mode, setMode] = useState<PaletteMode>(DARK);
   const colorMode: ColorModeContextType = useMemo(
@@ -89,6 +94,7 @@ export const useDynamicTheme = (): [ReturnType<typeof useWeatherTheme>, ColorMod
   return [theme, colorMode];
 };
 
+// Toggles movie selections and updates the list of finalized movies in the query client cache. 
 export const useHandleCheckboxChange = (movies: Movie[], selectedMovies: number[], setSelectedMovies: (value: React.SetStateAction<number[]>) => void) => {
   const queryClient = useQueryClient();
 
@@ -110,6 +116,7 @@ export const useHandleCheckboxChange = (movies: Movie[], selectedMovies: number[
   return handleCheckboxChange;
 };
 
+// Initializes movie selections and caches them using React Query upon component mount or movies update.
 export const useInitialSelectionAndFinalize = (movies: Movie[], setSelectedMovies: (movies: number[]) => void) => {
   const queryClient = useQueryClient();
 
@@ -122,6 +129,7 @@ export const useInitialSelectionAndFinalize = (movies: Movie[], setSelectedMovie
   }, [movies, queryClient, setSelectedMovies]);
 };
 
+//  Manages a list of searchable movie titles
 export const useSearchTitles = (movies: Movie[]) => {
   const [searchTitles, setSearchTitles] = useState<string[] | undefined>([]);
 

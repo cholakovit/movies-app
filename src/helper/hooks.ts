@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { AlertWithTimeoutHookProps, ColorModeContextType, Movie, MovieData } from "../types";
+import { AlertWithTimeoutHookProps, ColorModeContextType, Movie, MovieData } from "../../types";
 import { useWeatherTheme } from "./weatherTheme";
 import { PaletteMode } from "@mui/material";
 import { DARK, LIGHT } from "./constants";
-//import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useAlertWithTimeout = ({ initialAlert, timeout }: AlertWithTimeoutHookProps): string | null => {
   const [alert, setAlert] = useState<string | null>(initialAlert);
@@ -11,34 +11,35 @@ export const useAlertWithTimeout = ({ initialAlert, timeout }: AlertWithTimeoutH
   useEffect(() => {
     setAlert(initialAlert);
 
-    // Clear the alert after the specified timeout
     const timer = setTimeout(() => {
       setAlert(null);
     }, timeout);
 
-    // Clean up the timeout when the component unmounts or when the alert changes
     return () => clearTimeout(timer);
   }, [initialAlert, timeout]);
 
   return alert;
 };
 
+
 export const useFileReader = () => {
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const queryClient = useQueryClient();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files ? event.target.files[0] : null;
-      if (!file) return;
+    const file = event.target.files ? event.target.files[0] : null;
+    if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = (e: ProgressEvent<FileReader>) => {
-          const content = e.target?.result?.toString().split('\n').filter(Boolean) || [];
-          setMovies(content.map(title => ({ title, checked: true })));
-      };
-      reader.readAsText(file);
+    const reader = new FileReader();
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      const content = e.target?.result?.toString().split('\n').filter(Boolean) || [];
+      const movies = content.map((title, index) => ({ id: index + 1, title: title.trim(), checked: true }));
+      // Use queryClient to set movies data in the cache
+      queryClient.setQueryData(['movies'], movies);
+    };
+    reader.readAsText(file);
   };
 
-  return { movies, handleFileChange };
+  return { handleFileChange };
 };
 
 export const useMovieSearch = () => {
@@ -55,23 +56,22 @@ export const useMovieSearch = () => {
               fetch(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(title)}`)
               .then(response => response.json())
               .then(data => {
-                  const movie = data.results[0]; // Assuming the first result is the most relevant
+                  const movie = data.results[0];
                   if (!movie) {
                       throw new Error(`No results for "${title}"`);
                   }
-                  // Simplify and adjust based on your needs. This is a basic mapping.
                   return {
                       id: movie.id,
                       title: movie.title,
                       overview: movie.overview,
-                      actors: [], // Placeholder, requires additional calls
-                      genres: movie.genre_ids, // Placeholder, you may want to resolve these to genre names
+                      actors: [], 
+                      genres: movie.genre_ids, 
                       poster: `https://image.tmdb.org/t/p/original${movie.poster_path}`,
                       release: movie.release_date,
                       rating: movie.vote_average,
-                      trailer: '', // Placeholder, requires additional handling
-                      director: '', // Placeholder, requires additional calls
-                      duration: movie.runtime // This might not always be available here
+                      trailer: '', 
+                      director: '', 
+                      duration: movie.runtime 
                   };
               })
           );

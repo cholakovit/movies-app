@@ -8,7 +8,7 @@ import { Alert, AlertColor } from "@mui/material";
 import { useAlertWithTimeout } from "../../helper/hooks";
 
 // Types
-import { AlertMessageProps } from "../../types";
+import { AlertMessageProps } from "../../../types";
 
 const AlertMessage: FC<AlertMessageProps> = ({ alert, type }) => {
   const displayAlert: string | null = useAlertWithTimeout({

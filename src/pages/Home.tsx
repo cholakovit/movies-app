@@ -1,13 +1,20 @@
 import Header from '../components/Header'
 import FileUpload from '../components/FileUpload'
-import { MoviesApp } from '../index.style'
+import { MoviesApp, MoviesContainer } from '../index.style'
 import { FC } from 'react'
+import Movies from '../components/MovieTitles'
+import MoviesList from '../components/MoviesList'
+
 
 export const Home: FC = () => {
   return (
     <MoviesApp>
       <Header />
-      <FileUpload />
+      <MoviesContainer>
+        <FileUpload />
+        <Movies />
+        <MoviesList />
+      </MoviesContainer>
         {/* {error ? (
           <AlertMessage
             alert={`${GEOLOCATION_ERROR} ${(error as Error).message}`}

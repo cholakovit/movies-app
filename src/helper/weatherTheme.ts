@@ -1,7 +1,7 @@
 import { createTheme } from "@mui/material/styles";
 import { useMemo } from "react";
 import { PaletteMode, colors } from "@mui/material";
-import { CustomPalette } from "../types";
+import { CustomPalette } from "../../types";
 
 export const useWeatherTheme = (mode: PaletteMode) => {
   // memoizing the result so it won't calculate every time

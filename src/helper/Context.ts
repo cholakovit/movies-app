@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { ColorModeContextValue } from "../types";
+import { ColorModeContextValue } from "../../types";
 
 export const ColorModeContext = createContext<ColorModeContextValue>({
   toggleColorMode: () => {}

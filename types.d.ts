@@ -79,6 +79,7 @@ type colorModeProps = {
 }
 
 type Movie = {
+  id: number;
   title: string;
   checked: boolean;
 }

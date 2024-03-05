@@ -11,7 +11,7 @@ import { FC, useContext } from 'react';
 
 // Context for the Theme
 import { ColorModeContext } from '../../helper/Context';
-import { colorModeProps } from "../../types";
+import { colorModeProps } from "../../../types";
 
 const Header: FC = () => {
   const colorMode: colorModeProps = useContext(ColorModeContext) || {};

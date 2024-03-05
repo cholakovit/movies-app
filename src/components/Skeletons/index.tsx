@@ -5,7 +5,7 @@ import { Skeleton } from "@mui/material";
 import { SkeletonBox } from "./index.styles";
 
 // Types
-import { SkeletonProps } from "../../types";
+import { SkeletonProps } from "../../../types";
 
 const Skeletons: FC<SkeletonProps> = ({ width, height, number }) => {
   return (

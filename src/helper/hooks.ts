@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { AlertWithTimeoutHookProps, ColorModeContextType, Movie, MovieData } from "../../types";
+import { AlertWithTimeoutHookProps, ColorModeContextType, Movie } from "../../types";
 import { useWeatherTheme } from "./weatherTheme";
 import { PaletteMode } from "@mui/material";
 import { DARK, LIGHT } from "./constants";
-import { useQueryClient } from "@tanstack/react-query";
-import { delay } from "./fn";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
+import { fetchMovieData } from "./fn";
 
 export const useAlertWithTimeout = ({ initialAlert, timeout }: AlertWithTimeoutHookProps): string | null => {
   const [alert, setAlert] = useState<string | null>(initialAlert);
@@ -21,7 +21,6 @@ export const useAlertWithTimeout = ({ initialAlert, timeout }: AlertWithTimeoutH
 
   return alert;
 };
-
 
 export const useFileReader = () => {
   const queryClient = useQueryClient();
@@ -43,58 +42,25 @@ export const useFileReader = () => {
   return { handleFileChange };
 };
 
-export const useMovieSearch = () => {
-  const [movieData, setMovieData] = useState<MovieData[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+export const useMoviesSearch = (movieTitles: string[] | undefined) => {
+  const queryResults = useQueries({
+    queries: movieTitles!.map(title => ({
+      queryKey: ['movieData', title],
+      queryFn: () => fetchMovieData(title),
+      enabled: title.length > 0,
+    })),
+  });
 
-  const fetchMovieData = async (movieTitles: string[]) => {
-    setLoading(true);
-    setError('');
-    try {
-      const movieDataPromises = movieTitles.map(async (title) => {
-        await delay(2000); // Wait for 2 seconds before each request
-      
-        const response = await fetch(`${process.env.REACT_APP_TMDB_URL}?api_key=${process.env.REACT_APP_TMDB_API_KEY}&query=${encodeURIComponent(title)}`);
-        const data = await response.json();
-        
-        const movie = data.results[0];
-        if (!movie) {
-          throw new Error(`No results for "${title}"`);
-        }
-        return {
-          id: movie.id,
-          title: movie.title,
-          overview: movie.overview,
-          actors: [], 
-          genres: movie.genre_ids, 
-          poster: `${process.env.REACT_APP_TMDB_IMAGE_URL}${movie.poster_path}`,
-          release: movie.release_date,
-          rating: movie.vote_average,
-          trailer: '', 
-          director: '', 
-          duration: movie.runtime 
-        };
-      });
-        const movies = await Promise.all(movieDataPromises);
-        setMovieData(movies);
-    } catch (err: unknown) {
-        setError((err instanceof Error && err.message) || 'An error occurred while fetching movie data.');
-    } finally {
-        setLoading(false);
-    }
+  const isLoading = queryResults.some(result => result.isLoading);
+  const errors = queryResults.map(result => result.error).filter(error => error);
+  const movies = queryResults.map(result => result.data).filter(movie => movie);
+
+  // Combine movie data, loading state, and any errors
+  return { 
+    movieData: movies,
+    loading: isLoading,
+    error: errors.length > 0 ? errors : null,
   };
-
-  return { movieData, loading, error, fetchMovieData };
-};
-
-export const useHandleSearch = (movies: Movie[], fetchMovieData: (titles: string[]) => void) => {
-  const handleSearch = () => {
-      const titles = movies.filter(movie => movie.checked).map(movie => movie.title);
-      fetchMovieData(titles);
-  };
-
-  return { handleSearch };
 };
 
 export const useSyncFilteredMovies = <T,>(movieData: T[]) => {
@@ -133,7 +99,7 @@ export const useHandleCheckboxChange = (movies: Movie[], selectedMovies: number[
         ? [...currentSelected, movieId] 
         : currentSelected.filter((id) => id !== movieId);
 
-      const finalizedMovies = movies.filter((movie) => newSelected.includes(movie.id));
+      const finalizedMovies = movies.filter((movie: any) => newSelected.includes(movie.id));
       
       queryClient.setQueryData(['finalizedMovies'], finalizedMovies);
 
@@ -148,9 +114,21 @@ export const useInitialSelectionAndFinalize = (movies: Movie[], setSelectedMovie
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const initialSelected = movies.map(movie => movie.id);
+    //const initialSelected = movies.map(movie => movie.id);
+    const initialSelected = movies.map(movie => movie.id).filter(id => id !== undefined) as number[];
     setSelectedMovies(initialSelected);
 
     queryClient.setQueryData(['finalizedMovies'], movies);
   }, [movies, queryClient, setSelectedMovies]);
+};
+
+export const useSearchTitles = (movies: Movie[]) => {
+  const [searchTitles, setSearchTitles] = useState<string[] | undefined>([]);
+
+  const handleSearch = () => {
+    const titles = movies.filter(movie => movie.checked).map(movie => movie.title);
+    setSearchTitles(titles);
+  };
+
+  return { searchTitles, handleSearch };
 };

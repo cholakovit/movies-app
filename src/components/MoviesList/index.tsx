@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import {
-  useHandleSearch,
-  useMovieSearch,
+  useMoviesSearch,
+  useSearchTitles,
   useSyncFilteredMovies,
 } from "../../helper/hooks";
-import { MovieData } from "../../../types";
+
 import {
   Button,
   CardActions,
@@ -25,16 +25,15 @@ const MoviesList = () => {
     select: (data) => data ?? [],
     enabled: false,
   });
+  const { searchTitles, handleSearch } = useSearchTitles(movies || []);
 
-  const { movieData, loading, error, fetchMovieData } = useMovieSearch();
-
-  const { handleSearch } = useHandleSearch(movies, fetchMovieData);
+  const { movieData, loading, error } = useMoviesSearch(searchTitles);
 
   const { filteredMovies, setFilteredMovies } =
-    useSyncFilteredMovies<MovieData>(movieData);
+    useSyncFilteredMovies(movieData);
 
   const removeMovie = (id: number) => {
-    setFilteredMovies(filteredMovies.filter((movie) => movie.id !== id));
+    setFilteredMovies(filteredMovies.filter((movie: any) => movie.id !== id));
   };
 
   return (
@@ -59,7 +58,7 @@ const MoviesList = () => {
           )}
   
           <MovieCardContainer>
-            {filteredMovies.map((movie, index) => (
+            {filteredMovies.map((movie: any, index) => (
               <MovieCard  key={index}>
                 <CardMedia
                   component="img"

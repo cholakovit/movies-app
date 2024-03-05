@@ -70,7 +70,6 @@ export type AlertMessageProps = {
 }
 
 type SkeletonProps = {
-  flag: number;
   width: number;
   height: number;
   number: number;

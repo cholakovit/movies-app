@@ -21,6 +21,6 @@ export const MoviesContainer = styled('div')(({ theme }) => ({
   justifyContent: 'start', 
   gap: '10px', 
   padding: '20px',
-  width: '800px'
+  width: '100%'
 }));
 

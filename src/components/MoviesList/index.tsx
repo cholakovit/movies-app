@@ -7,14 +7,15 @@ import {
 import { MovieData } from "../../../types";
 import {
   Button,
-  Card,
   CardActions,
   CardContent,
   CardMedia,
   Typography,
 } from "@mui/material";
-import { StyledSearchButton } from "./index.style";
+import { MovieCard, MovieCardContainer, StyledSearchButton } from "./index.style";
 import SearchIcon from "@mui/icons-material/Search";
+import AlertMessage from "../Alert";
+import Skeletons from "../Skeletons";
 
 const MoviesList = () => {
   const { data: movies } = useQuery({
@@ -24,8 +25,6 @@ const MoviesList = () => {
     select: (data) => data ?? [],
     enabled: false,
   });
-
-  console.log("MoviesList: ", movies);
 
   const { movieData, loading, error, fetchMovieData } = useMovieSearch();
 
@@ -38,52 +37,55 @@ const MoviesList = () => {
     setFilteredMovies(filteredMovies.filter((movie) => movie.id !== id));
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
   return (
-    <div>
-      <StyledSearchButton
-        onClick={handleSearch}
-        variant="contained"
-        startIcon={<SearchIcon />}
-      >
-        Search
-      </StyledSearchButton>
-
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "16px",
-          justifyContent: "center",
-        }}
-      >
-        {filteredMovies.map((movie, index) => (
-          <Card sx={{ maxWidth: 345 }} key={index}>
-            <CardMedia
-              component="img"
-              alt={movie.title}
-              height="440"
-              src={movie.poster}
-            />
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                {movie.title}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {movie.overview}
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button size="small" onClick={() => removeMovie(movie.id)}>
-                🗑️
-              </Button>
-            </CardActions>
-          </Card>
-        ))}
-      </div>
-    </div>
+    <>
+      {error ? (
+        <AlertMessage
+          alert={`Error: ${error}`}
+          type="error"
+        />
+      ) : loading ? (
+        <Skeletons width={330} height={600} number={filteredMovies.length} />
+      ) : (
+        <>
+          {movies && movies.length > 0 && (
+            <StyledSearchButton
+              onClick={handleSearch}
+              variant="contained"
+              startIcon={<SearchIcon />}
+            >
+              Search
+            </StyledSearchButton>
+          )}
+  
+          <MovieCardContainer>
+            {filteredMovies.map((movie, index) => (
+              <MovieCard  key={index}>
+                <CardMedia
+                  component="img"
+                  alt={movie.title}
+                  height="440"
+                  src={movie.poster}
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {movie.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {movie.overview}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button size="small" onClick={() => removeMovie(movie.id)}>
+                    🗑️
+                  </Button>
+                </CardActions>
+              </MovieCard>
+            ))}
+          </MovieCardContainer>
+        </>
+      )}
+    </>
   );
 };
 

@@ -22,6 +22,7 @@ export const VisuallyHiddenInput = styled('input')({
 });
 
 export const StyledButton = styled(Button)<ButtonProps>(({ theme }) => ({
+  color: theme.palette.primary.lighter,
   backgroundColor: theme.palette.primary.black,
   '&:hover': {
     backgroundColor: theme.palette.primary.hoverBgButton,

@@ -2,14 +2,14 @@ import { FC } from "react";
 
 // MUI Elements
 import { Skeleton } from "@mui/material";
-import { SkeletonBox } from "./index.styles";
+import { SkeletonBox, SkeletonContainer } from "./index.styles";
 
 // Types
 import { SkeletonProps } from "../../../types";
 
 const Skeletons: FC<SkeletonProps> = ({ width, height, number }) => {
   return (
-    <>
+    <SkeletonContainer>
       {Array.from({ length: number }, (_, index) => (
         <SkeletonBox key={index} data-testid="skeletons">
           <Skeleton
@@ -20,7 +20,7 @@ const Skeletons: FC<SkeletonProps> = ({ width, height, number }) => {
           />
         </SkeletonBox>
       ))}
-    </>
+    </SkeletonContainer>
   );
 };
 

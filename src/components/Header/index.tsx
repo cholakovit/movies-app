@@ -7,10 +7,10 @@ import {
 } from "./index.style";
 
 // Hooks
-import { FC, useContext } from 'react';
+import { FC, useContext } from "react";
 
 // Context for the Theme
-import { ColorModeContext } from '../../helper/Context';
+import { ColorModeContext } from "../../helper/Context";
 import { colorModeProps } from "../../../types";
 
 const Header: FC = () => {

@@ -66,7 +66,7 @@ const MoviesList = () => {
           )}
 
           <MovieCardContainer>
-            {filteredMovies.map((movie: any, index) => (
+            {filteredMovies.map((movie: any, index: number) => (
               <MovieCard key={index}>
                 <CardMedia
                   component="img"

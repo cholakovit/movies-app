@@ -5,6 +5,7 @@ import { PaletteMode } from "@mui/material";
 import { DARK, LIGHT } from "./constants";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
 import { fetchMovieData } from "./fn";
+//import { isEqual } from 'lodash';
 
 // Displaying an alert message for a specified duration before automatically dismissing it.
 export const useAlertWithTimeout = ({ initialAlert, timeout }: AlertWithTimeoutHookProps): string | null => {
@@ -58,6 +59,8 @@ export const useMoviesSearch = (movieTitles: string[] | undefined) => {
   const errors = queryResults.map(result => result.error).filter(error => error);
   const movies = queryResults.map(result => result.data).filter(movie => movie);
 
+  //console.log('queryResults: ', queryResults)
+
   // Combine movie data, loading state, and any errors
   return { 
     movieData: movies,
@@ -68,13 +71,15 @@ export const useMoviesSearch = (movieTitles: string[] | undefined) => {
 
 // Synchronizes and manages a stateful list of filtered movies with an external movie data array.
 export const useSyncFilteredMovies = <T,>(movieData: T[]) => {
-  const [filteredMovies, setFilteredMovies] = useState<T[]>(movieData);
-
-  useEffect(() => {
-      setFilteredMovies(movieData);
+  const filteredMovies = useMemo(() => {
+    return movieData;
   }, [movieData]);
 
-  return { filteredMovies, setFilteredMovies };
+  const [manualFilteredMovies, setFilteredMovies] = useState<T[]>(filteredMovies);
+
+  const movies = manualFilteredMovies.length > 0 ? manualFilteredMovies : filteredMovies;
+
+  return { filteredMovies: movies, setFilteredMovies };
 };
 
 // Dynamically toggling and providing a themed color mode context based on user interaction.

@@ -9,7 +9,9 @@ export const MoviesApp = styled('div')(({ theme }) => ({
   width: '100%',
   height: '100%',
   fontSize: '14px',
-  backgroundColor: theme.palette.primary.fourth,
+  backgroundColor: theme.palette.primary.main,
+  margin: 0,
+  padding: 0
 }));
 
 export const MoviesContainer = styled('div')(({ theme }) => ({
@@ -19,7 +21,6 @@ export const MoviesContainer = styled('div')(({ theme }) => ({
   justifyContent: 'start', 
   gap: '10px', 
   padding: '20px',
-  border: '1px solid red',
   width: '800px'
 }));
 

@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { useFileReader } from '../../helper/hooks';
-import { FileUploadHolder, VisuallyHiddenInput } from './index.style';
-import { Button } from '@mui/material';
+import { FileUploadHolder, StyledButton, VisuallyHiddenInput } from './index.style';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 
@@ -9,7 +8,7 @@ const MoviesUploader: FC = () => {
   const { handleFileChange } = useFileReader();
   return (
     <FileUploadHolder>
-      <Button
+      <StyledButton
         component="label"
         role={undefined}
         variant="contained"
@@ -18,10 +17,9 @@ const MoviesUploader: FC = () => {
       >
         Upload file
         <VisuallyHiddenInput type="file" accept='.txt' onChange={handleFileChange} />
-      </Button>
+      </StyledButton>
     </FileUploadHolder>
-  ) 
-    
+  )   
 };
 
 export default MoviesUploader;

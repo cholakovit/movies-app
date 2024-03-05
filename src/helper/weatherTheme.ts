@@ -34,9 +34,10 @@ export const useWeatherTheme = (mode: PaletteMode) => {
             white: mode === "light" ? colors.grey[800] : colors.grey[600],
             lighter: mode === "light" ? colors.grey[800] : colors.grey[400],
             iconColor: mode === "light" ? colors.grey[900] : colors.grey[100],
+            hoverBgButton: mode === "light" ? colors.grey[900] : colors.grey[700],
           },
-          mode, // Add the mode property to the palette object
-        } as CustomPalette, // Assert the palette to the custom interface
+          mode, 
+        } as CustomPalette, 
       }),
     [mode]
   );

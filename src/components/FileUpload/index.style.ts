@@ -1,11 +1,11 @@
-import { Container, styled } from "@mui/material";
+import { Button, ButtonProps, Container, styled } from "@mui/material";
 
 
 export const FileUploadHolder = styled(Container)({
   display: 'flex',
   justifyContent: 'center',
   padding: '10px',
-  margin: '100px 0 0 0'
+  margin: '100px 0 0 0',
 });
 
 export const VisuallyHiddenInput = styled('input')({
@@ -18,4 +18,12 @@ export const VisuallyHiddenInput = styled('input')({
   left: 0,
   whiteSpace: 'nowrap',
   width: 1,
+
 });
+
+export const StyledButton = styled(Button)<ButtonProps>(({ theme }) => ({
+  backgroundColor: theme.palette.primary.black,
+  '&:hover': {
+    backgroundColor: theme.palette.primary.hoverBgButton,
+  },
+}));

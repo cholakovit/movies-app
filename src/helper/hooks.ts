@@ -51,9 +51,8 @@ export const useMovieSearch = () => {
       setLoading(true);
       setError('');
       try {
-          const apiKey = process.env.REACT_APP_TMDB_API_KEY;
           const movieDataPromises = movieTitles.map(title =>
-              fetch(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(title)}`)
+              fetch(`${process.env.REACT_APP_TMDB_URL}?api_key=${process.env.REACT_APP_TMDB_API_KEY}&query==${encodeURIComponent(title)}`)
               .then(response => response.json())
               .then(data => {
                   const movie = data.results[0];
@@ -66,7 +65,7 @@ export const useMovieSearch = () => {
                       overview: movie.overview,
                       actors: [], 
                       genres: movie.genre_ids, 
-                      poster: `https://image.tmdb.org/t/p/original${movie.poster_path}`,
+                      poster: `${process.env.REACT_APP_TMDB_IMAGE_URL}${movie.poster_path}`,
                       release: movie.release_date,
                       rating: movie.vote_average,
                       trailer: '', 

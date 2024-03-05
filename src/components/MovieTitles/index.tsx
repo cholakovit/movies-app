@@ -1,38 +1,41 @@
-import { Checkbox, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Button } from '@mui/material';
+import { Checkbox, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Movie } from '../../../types';
 
 const Movies = () => {
   const queryClient = useQueryClient();
-
   const { data: movies } = useQuery<Movie[]>({
     queryKey: ['movies'],
-    queryFn: () => Promise.resolve([]),
+    queryFn: () => Promise.resolve([]), 
     initialData: () => [],
     select: (data) => data ?? [],
-    enabled: false,
+    enabled: false, 
   });
 
-  // Initialize all movies as selected
-  const [selectedMovies, setSelectedMovies] = useState<number[]>(movies.map(movie => movie.id));
+  const [selectedMovies, setSelectedMovies] = useState<number[]>([]);
+
+  useEffect(() => {
+    const initialSelected = movies.map(movie => movie.id);
+    setSelectedMovies(initialSelected);
+
+    queryClient.setQueryData(['finalizedMovies'], movies);
+  }, [movies, queryClient]);
 
   const handleCheckboxChange = (movieId: number) => {
     setSelectedMovies((currentSelected) => {
       const newIndex = currentSelected.indexOf(movieId);
-      if (newIndex === -1) {
-        return [...currentSelected, movieId];
-      } else {
-        return currentSelected.filter((id) => id !== movieId);
-      }
-    });
-  };
+      const newSelected = newIndex === -1 
+        ? [...currentSelected, movieId] 
+        : currentSelected.filter((id) => id !== movieId);
 
-  // Handler to finalize the selection
-  const finalizeSelection = () => {
-    const finalizedMovies = movies.filter((movie) => selectedMovies.includes(movie.id));
-    console.log('Finalized Selection:', finalizedMovies);
-    queryClient.setQueryData(['finalizedMovies'], finalizedMovies);
+      const finalizedMovies = movies.filter((movie) => newSelected.includes(movie.id));
+      console.log('Finalized Selection:', finalizedMovies);
+      
+      queryClient.setQueryData(['finalizedMovies'], finalizedMovies);
+
+      return newSelected;
+    });
   };
 
   if (!movies || movies.length === 0) {
@@ -59,9 +62,6 @@ const Movies = () => {
           </ListItem>
         ))}
       </List>
-      <Button onClick={finalizeSelection} variant="contained" style={{ marginTop: '20px' }}>
-        Finalize Selection
-      </Button>
     </div>
   );
 };

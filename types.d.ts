@@ -11,6 +11,8 @@ declare module "@mui/material/styles" {
     black?: string;
     fourth?: string; 
     white?: string;
+    iconColor?: string;
+    hoverBgButton?: string;
   }
 
   type Palette = {

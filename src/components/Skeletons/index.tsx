@@ -18,6 +18,7 @@ const Skeletons: FC<SkeletonProps> = ({ width, height, number }) => {
             animation="wave"
             width={width}
             height={height}
+            data-testid={`skeleton-${index}`}
           />
         </SkeletonBox>
       ))}

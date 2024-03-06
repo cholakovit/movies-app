@@ -28,6 +28,9 @@ import {
 import AlertMessage from "../Alert";
 import Skeletons from "../Skeletons";
 
+// Constants
+import { SEARCH } from "../../helper/constants";
+
 const MoviesList = () => {
   const { data: movies } = useQuery({
     queryKey: ["finalizedMovies"],
@@ -60,8 +63,9 @@ const MoviesList = () => {
               onClick={handleSearch}
               variant="contained"
               startIcon={<SearchIcon />}
+              data-testid="search-button"
             >
-              Search
+              {SEARCH}
             </StyledSearchButton>
           )}
 

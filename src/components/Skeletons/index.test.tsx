@@ -1,16 +1,25 @@
-import { render } from '@testing-library/react';
-import Skeletons from '.';
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import Skeletons from '.'; // Adjust the import path as necessary
 
-describe('Skeletons component', () => {
-  it('renders multiple skeletons when flag is 1', () => {
-    const { getAllByTestId } = render(<Skeletons width={130} height={110} number={5} />);
-    // const skeletons = getAllByTestId('skeletons');
-    // expect(skeletons).toHaveLength(24);
-  });
+describe('Skeletons Component', () => {
+  it('renders the correct number of skeletons', () => {
+    const testProps = {
+      width: 100,
+      height: 100,
+      number: 3,
+    };
 
-  it('renders a single skeleton when flag is 2', () => {
-    const { getByTestId } = render(<Skeletons width={210} height={370} number={5} />);
-    // const skeleton = getByTestId('skeletons') as HTMLElement;
-    // expect(skeleton).toBeInTheDocument();
+    render(<Skeletons {...testProps} />);
+
+    const skeletonElements = screen.getAllByTestId('skeletons');
+    expect(skeletonElements.length).toBe(testProps.number);
+
+    for (let index = 0; index < testProps.number; index++) {
+      const skeleton = screen.getByTestId(`skeleton-${index}`);
+      expect(skeleton).toHaveStyle(`width: ${testProps.width}px`);
+      expect(skeleton).toHaveStyle(`height: ${testProps.height}px`);
+    }
   });
 });

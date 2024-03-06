@@ -26,6 +26,7 @@ const MoviesUploader: FC = () => {
           type="file"
           accept=".txt"
           onChange={handleFileChange}
+          data-testid="file-input"
         />
       </StyledButton>
     </FileUploadHolder>

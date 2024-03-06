@@ -5,7 +5,6 @@ import { PaletteMode } from "@mui/material";
 import { DARK, LIGHT } from "./constants";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
 import { fetchMovieData } from "./fn";
-//import { isEqual } from 'lodash';
 
 // Displaying an alert message for a specified duration before automatically dismissing it.
 export const useAlertWithTimeout = ({ initialAlert, timeout }: AlertWithTimeoutHookProps): string | null => {
@@ -59,7 +58,7 @@ export const useMoviesSearch = (movieTitles: string[] | undefined) => {
   const errors = queryResults.map(result => result.error).filter(error => error);
   const movies = queryResults.map(result => result.data).filter(movie => movie);
 
-  //console.log('queryResults: ', queryResults)
+  console.log('queryResults: ', movies)
 
   // Combine movie data, loading state, and any errors
   return { 
@@ -126,7 +125,6 @@ export const useInitialSelectionAndFinalize = (movies: Movie[], setSelectedMovie
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    //const initialSelected = movies.map(movie => movie.id);
     const initialSelected = movies.map(movie => movie.id).filter(id => id !== undefined) as number[];
     setSelectedMovies(initialSelected);
 
